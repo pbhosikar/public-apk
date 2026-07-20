@@ -1,6 +1,6 @@
 # SevenMentor CRM Sync — APK downloads
 
-**Current release: 4.6.0 (build 83)** — web CRM menu parity + Indigo theme (#4F46E5 / #06B6D4).
+**Current release: 4.7.0 (build 84)** — full web-style admin create/edit forms + Indigo theme.
 
 | Device | Download |
 |--------|----------|
@@ -9,21 +9,18 @@
 
 **Direct install links:**
 
-- **Redmi 9A (use this):** https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync-armv7.apk
-- 64-bit phones: https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync.apk
+- **Redmi 9A:** https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync-armv7.apk
+- 64-bit: https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync.apk
 
-## What's new in 4.6.0
+## 4.7.0
 
-- **More → CRM Menu** mirrors web sidebar sections: HOME / COURSES / OPERATIONS / ADMIN SETTINGS
-- Same Indigo brand colors as web CRM
-- Live pages for Dashboard, Duplicates, Unassigned, Enrolled, Recordings, Mobile Sync, Courses, Batches, Branches, Counsellors, and Admin config modules
+- Admin modules: Add / Edit / Delete forms (courses, batches, branches, departments, counsellors, enrollments, picklists, custom fields)
+- Config editors: CRM Config, Policies, Appearance, Security, Lead Settings, Integrations, Mail, Allocation, Dashboard Config
+- Roles & Permissions matrix toggles
+- Assignment Audit read-only list
 
 ## Install tips
 
-1. Uninstall any older CRM Sync first.
-2. Open the link in **Chrome** (not WhatsApp browser).
-3. Allow **Install unknown apps** for Chrome / Files.
-4. After login (device recording mode): **Settings → Allow access to call_rec folder** (pick `MIUI/sound_recorder/call_rec`).
-5. Use **Settings → Upload missed / old recordings** if older calls have no audio in CRM.
-
-If install shows **“App not installed”** on Redmi 9A, you used the wrong APK — install **armv7** only.
+1. Uninstall older CRM Sync first.
+2. Open link in Chrome → Allow install unknown apps.
+3. Redmi: pick `MIUI/sound_recorder/call_rec` under Settings after login.
