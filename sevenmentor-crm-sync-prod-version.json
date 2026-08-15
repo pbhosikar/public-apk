@@ -1,7 +1,7 @@
 {
-  "versionCode": 107,
-  "versionName": "4.15.8",
-  "releasedAt": "2026-08-14T19:33:29Z",
+  "versionCode": 108,
+  "versionName": "4.15.9",
+  "releasedAt": "2026-08-15T09:08:48Z",
   "apkUrlArm64": "https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync-prod.apk",
   "apkUrlArmv7": "https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync-prod-armv7.apk",
   "apkUrl": "https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync-prod.apk"
