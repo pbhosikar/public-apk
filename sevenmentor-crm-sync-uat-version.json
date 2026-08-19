@@ -1,7 +1,7 @@
 {
   "versionCode": 118,
   "versionName": "4.15.19",
-  "releasedAt": "2026-08-19T11:07:08Z",
+  "releasedAt": "2026-08-19T11:36:56Z",
   "cacheBust": "118",
   "apkUrlArm64": "https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync-uat.apk",
   "apkUrlArmv7": "https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-crm-sync-uat-armv7.apk",
