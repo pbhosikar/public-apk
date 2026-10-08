@@ -1,5 +1,8 @@
 /** chrome.storage.local helpers (MV3 service worker + pages). */
 
+/** Production CRM API — used when the user has not saved a custom base URL. */
+export const DEFAULT_API_BASE = 'https://crm-api.sevenmentor.io';
+
 export async function getSettings() {
   const data = await chrome.storage.local.get([
     'apiBase',
@@ -12,8 +15,9 @@ export async function getSettings() {
     'adapterFetchedAt',
     'updateRequired',
   ]);
+  const stored = String(data.apiBase || '').trim().replace(/\/+$/, '');
   return {
-    apiBase: String(data.apiBase || '').replace(/\/+$/, ''),
+    apiBase: stored || DEFAULT_API_BASE,
     passKey: String(data.passKey || ''),
     autoSync: data.autoSync !== false,
     lastSyncAt: data.lastSyncAt || null,
@@ -30,8 +34,8 @@ export async function setSettings(partial) {
 }
 
 export function apiV1Base(apiBase) {
-  const root = String(apiBase || '').replace(/\/+$/, '');
-  if (!root) return '';
+  const root = String(apiBase || DEFAULT_API_BASE).replace(/\/+$/, '');
+  if (!root) return `${DEFAULT_API_BASE}/api/v1`;
   if (/\/api\/v1$/i.test(root)) return root;
   return `${root}/api/v1`;
 }

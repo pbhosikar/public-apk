@@ -1,18 +1,19 @@
-import { getSettings, setSettings } from './lib/storage.js';
+import { getSettings, setSettings, DEFAULT_API_BASE } from './lib/storage.js';
 
 const $ = (id) => document.getElementById(id);
 
 async function load() {
   const s = await getSettings();
-  $('apiBase').value = s.apiBase || '';
+  $('apiBase').value = s.apiBase || DEFAULT_API_BASE;
   $('passKey').value = s.passKey || '';
   $('autoSync').checked = s.autoSync !== false;
 }
 
 async function save() {
-  const apiBase = $('apiBase').value.trim().replace(/\/+$/, '');
+  const apiBase = ($('apiBase').value.trim() || DEFAULT_API_BASE).replace(/\/+$/, '');
   const passKey = $('passKey').value.trim();
   const autoSync = $('autoSync').checked;
+  $('apiBase').value = apiBase;
   await setSettings({ apiBase, passKey, autoSync });
   $('status').className = 'ok';
   $('status').textContent = 'Saved.';

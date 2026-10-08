@@ -1,4 +1,4 @@
-import { getSettings, setSettings, apiV1Base } from './lib/storage.js';
+import { getSettings, setSettings, apiV1Base, DEFAULT_API_BASE } from './lib/storage.js';
 
 const EXT_VERSION = chrome.runtime.getManifest().version;
 const ADAPTER_TTL_MS = 3 * 60 * 60 * 1000; // 3 hours
@@ -121,6 +121,12 @@ async function postSync(payload) {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.create('smwa-adapter-refresh', { periodInMinutes: 180 });
   chrome.alarms.create('smwa-heartbeat', { periodInMinutes: 15 });
+  // Seed production API URL so Options / sync work without typing a URL.
+  chrome.storage.local.get(['apiBase'], (data) => {
+    if (!String(data.apiBase || '').trim()) {
+      chrome.storage.local.set({ apiBase: DEFAULT_API_BASE });
+    }
+  });
   refreshAdapterConfig(true).catch(() => {});
 });
 
