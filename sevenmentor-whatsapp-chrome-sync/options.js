@@ -1,4 +1,4 @@
-import { getSettings, setSettings, apiV1Base } from './lib/storage.js';
+import { getSettings, setSettings } from './lib/storage.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -20,21 +20,12 @@ async function save() {
 
 async function test() {
   await save();
-  const s = await getSettings();
   const status = $('status');
   status.className = '';
   status.textContent = 'Testing…';
   try {
-    const base = apiV1Base(s.apiBase);
-    const res = await fetch(`${base}/public/whatsapp-ext/adapter-config`, {
-      headers: {
-        Accept: 'application/json',
-        'x-whatsapp-ext-key': s.passKey,
-      },
-    });
-    const json = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(json?.error?.message || `HTTP ${res.status}`);
-    await chrome.runtime.sendMessage({ type: 'REFRESH_ADAPTER' });
+    const resp = await chrome.runtime.sendMessage({ type: 'TEST_CONNECTION' });
+    if (!resp?.ok) throw new Error(resp?.error || 'Connection failed');
     status.className = 'ok';
     status.textContent = 'Connected — adapter config OK.';
   } catch (err) {

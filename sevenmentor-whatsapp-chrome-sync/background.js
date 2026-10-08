@@ -178,5 +178,54 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     refreshAdapterConfig(true).then((config) => sendResponse({ ok: true, config })).catch((e) => sendResponse({ ok: false, error: e.message }));
     return true;
   }
+  if (msg?.type === 'TEST_CONNECTION') {
+    (async () => {
+      const s = await getSettings();
+      if (!s.apiBase) throw new Error('Set CRM API base URL first');
+      if (!s.passKey) throw new Error('Paste your pass key first');
+      const base = apiV1Base(s.apiBase);
+      const url = `${base}/public/whatsapp-ext/adapter-config?v=${encodeURIComponent(EXT_VERSION)}`;
+      let res;
+      try {
+        res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'x-whatsapp-ext-key': s.passKey,
+          },
+        });
+      } catch (err) {
+        const hint = /failed to fetch|networkerror|load failed/i.test(String(err?.message || ''))
+          ? ' — CRM API unreachable (check https://crm-api.sevenmentor.io is up, or redeploy crm-api)'
+          : '';
+        throw new Error(`${err?.message || 'Failed to fetch'}${hint}`);
+      }
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 502 || res.status === 503) {
+          throw new Error(`CRM API is down (HTTP ${res.status}). Restart/redeploy crm-api, then retry.`);
+        }
+        if (res.status === 401) {
+          throw new Error('Invalid or revoked pass key — create a new one in CRM → WhatsApp Chrome Sync');
+        }
+        if (res.status === 403) {
+          throw new Error(json?.error?.message || json?.message || 'Blocked (403). Deploy latest crm-api so /public/whatsapp-ext bypasses IP whitelist.');
+        }
+        if (res.status === 404) {
+          throw new Error('Endpoint missing (404). Deploy latest crm-api with WhatsApp Chrome Sync routes.');
+        }
+        throw new Error(json?.error?.message || json?.message || `HTTP ${res.status}`);
+      }
+      await setSettings({
+        adapterConfig: json?.data !== undefined ? json.data : json,
+        adapterFetchedAt: Date.now(),
+        lastError: '',
+      });
+      return { ok: true };
+    })()
+      .then((r) => sendResponse(r))
+      .catch((e) => sendResponse({ ok: false, error: e.message }));
+    return true;
+  }
   return false;
 });

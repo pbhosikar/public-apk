@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SevenMentor WhatsApp Sync",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sync WhatsApp Web chats into SevenMentor CRM with a free pass key — no paid WhatsApp API.",
   "icons": {
     "16": "icons/icon16.png",
@@ -27,6 +27,7 @@
   "permissions": ["storage", "alarms", "tabs"],
   "host_permissions": [
     "https://web.whatsapp.com/*",
+    "https://crm-api.sevenmentor.io/*",
     "https://*.sevenmentor.io/*",
     "http://localhost:3007/*",
     "http://127.0.0.1:3007/*"
