@@ -14,11 +14,14 @@ Hosted on the same public repo as CRM Sync APKs:
 
 ## Install (sideload)
 
-1. Download the ZIP above and unzip it.
-2. Chrome → `chrome://extensions` → Developer mode → **Load unpacked** → select the unzipped folder.
-3. In CRM → **WhatsApp Chrome Sync**, create a pass key (shown once).
-4. Extension **Options**: paste CRM API base URL + pass key.
-5. Open [web.whatsapp.com](https://web.whatsapp.com), scan QR once, open a lead chat.
+Chrome **cannot** load a `.zip` file. Unzip first, then load the folder.
+
+1. Download the ZIP above and **unzip** it (double-click on Mac). You get a folder `sevenmentor-whatsapp-chrome-sync` with `manifest.json` inside.
+2. Chrome → `chrome://extensions` → Developer mode → **Load unpacked**.
+3. Select that **folder** — not the `.zip`.
+4. In CRM → **WhatsApp Chrome Sync**, create a pass key (shown once).
+5. Extension **Options**: paste CRM API base URL + pass key.
+6. Open [web.whatsapp.com](https://web.whatsapp.com), scan QR once, open a lead chat.
 
 ## Resilience
 
