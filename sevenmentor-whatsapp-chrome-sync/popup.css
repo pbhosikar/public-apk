@@ -1,0 +1,58 @@
+body {
+  width: 280px;
+  margin: 0;
+  padding: 12px 14px 14px;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: #1a2e28;
+  background: #f6f8f7;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+#version { font-size: 11px; color: #5a6f68; }
+dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 6px 8px;
+  font-size: 12px;
+}
+dt { color: #5a6f68; margin: 0; }
+dd { margin: 0; font-weight: 600; }
+.hint {
+  font-size: 11px;
+  color: #5a6f68;
+  margin: 10px 0 0;
+  line-height: 1.35;
+}
+.banner {
+  font-size: 11px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  background: #fef3c7;
+  color: #92400e;
+}
+.banner.err { background: #fee4e2; color: #912018; }
+.banner.ok { background: #d1fadf; color: #05603a; }
+.hidden { display: none; }
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+button {
+  flex: 1;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  background: #0d7a5f;
+  color: #fff;
+}
+button.secondary { background: #e8efec; color: #1a2e28; }

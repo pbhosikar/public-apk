@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SevenMentor Sync</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <strong>WhatsApp Sync</strong>
+    <span id="version"></span>
+  </header>
+  <div id="banner" class="banner hidden"></div>
+  <dl>
+    <dt>Status</dt>
+    <dd id="status">…</dd>
+    <dt>Last sync</dt>
+    <dd id="lastSync">—</dd>
+    <dt>Strategy</dt>
+    <dd id="strategy">—</dd>
+  </dl>
+  <p id="hint" class="hint"></p>
+  <div class="actions">
+    <button type="button" id="syncNow">Sync now</button>
+    <button type="button" id="openOptions" class="secondary">Options</button>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

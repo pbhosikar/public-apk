@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "SevenMentor WhatsApp Sync",
+  "version": "1.0.0",
+  "description": "Sync WhatsApp Web chats into SevenMentor CRM with a free pass key — no paid WhatsApp API.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "SevenMentor WhatsApp Sync",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage", "alarms", "tabs"],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://*.sevenmentor.io/*",
+    "http://localhost:3007/*",
+    "http://127.0.0.1:3007/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": [
+        "adapters/ariaStable.js",
+        "adapters/storeHook.js",
+        "adapters/domFallback.js",
+        "adapters/index.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
