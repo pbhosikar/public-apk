@@ -1,7 +1,8 @@
 {
   "version": "1.0.0",
-  "releasedAt": "2026-10-08T20:04:13Z",
+  "releasedAt": "2026-10-08T20:13:21Z",
   "zipUrl": "https://github.com/pbhosikar/public-apk/raw/main/sevenmentor-whatsapp-chrome-sync.zip",
   "folderUrl": "https://github.com/pbhosikar/public-apk/tree/main/sevenmentor-whatsapp-chrome-sync",
-  "sourceUrl": "https://github.com/SevenMentor-Pvt-Ltd/crm-api/tree/main/crm-whatsapp-extension"
+  "sourceUrl": "https://github.com/SevenMentor-Pvt-Ltd/crm-api/tree/main/crm-whatsapp-extension",
+  "installNote": "Unzip first. Chrome Load unpacked needs the folder (with manifest.json), not the .zip file."
 }

@@ -37,8 +37,9 @@ Free TeleCRM-style chat sync — counsellors use WhatsApp Web in Chrome; this ex
 
 ### Install
 
-1. Download the ZIP and unzip it (or clone this repo and open the folder).
-2. Chrome → `chrome://extensions` → Developer mode → **Load unpacked** → select `sevenmentor-whatsapp-chrome-sync/`.
-3. In CRM → **WhatsApp Chrome Sync**, create a pass key.
-4. Extension Options → paste CRM API URL + pass key → open [web.whatsapp.com](https://web.whatsapp.com).
+1. Download the ZIP and **unzip** it (double-click on Mac). You should get a folder named `sevenmentor-whatsapp-chrome-sync` that contains `manifest.json`.
+2. Chrome → `chrome://extensions` → Developer mode → **Load unpacked**.
+3. Select the **folder** `sevenmentor-whatsapp-chrome-sync` — **not** the `.zip` file (Chrome cannot load a zip).
+4. In CRM → **WhatsApp Chrome Sync**, create a pass key.
+5. Extension Options → paste CRM API URL + pass key → open [web.whatsapp.com](https://web.whatsapp.com).
 
