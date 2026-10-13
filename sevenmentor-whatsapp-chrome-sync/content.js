@@ -5,6 +5,7 @@
   const EXT_VERSION = chrome.runtime.getManifest().version;
   let lastFingerprint = '';
   let syncTimer = null;
+  let running = false;
 
   function waWebBuild() {
     try {
@@ -16,9 +17,10 @@
   }
 
   function fingerprint(result) {
+    if (result?.idle) return 'idle:no-chat';
     if (!result?.ok) return `fail:${result?.errorCode || ''}`;
     const last = result.messages?.[result.messages.length - 1];
-    return `${result.phone}|${result.messages?.length || 0}|${last?.text?.slice(0, 40) || ''}|${last?.at || ''}`;
+    return `${result.phone}|${result.chatName || ''}|${result.messages?.length || 0}|${last?.text?.slice(0, 40) || ''}|${last?.at || ''}`;
   }
 
   async function getAdapterConfig() {
@@ -31,34 +33,43 @@
   }
 
   async function runExtractAndSync(force) {
-    const cfg = await getAdapterConfig();
-    const result = window.SMWA_extractActiveChat(cfg);
-    const fp = fingerprint(result);
-    if (!force && fp === lastFingerprint && result.ok) {
-      return { skipped: true };
-    }
-    lastFingerprint = fp;
-
-    const health = {
-      extVersion: EXT_VERSION,
-      waWebBuild: waWebBuild(),
-      strategyUsed: result.strategyUsed || '',
-      extractOk: Boolean(result.ok),
-      errorCode: result.errorCode || '',
-    };
-
+    if (running) return { skipped: true, busy: true };
+    running = true;
     try {
-      const resp = await chrome.runtime.sendMessage({
-        type: 'SYNC_CHAT',
-        payload: {
-          phone: result.phone || '',
-          messages: result.ok ? result.messages : [],
-          health,
-        },
-      });
-      return resp;
-    } catch (err) {
-      return { ok: false, error: err?.message || 'bg_failed' };
+      const cfg = await getAdapterConfig();
+      const result = await window.SMWA_extractActiveChat(cfg);
+      const fp = fingerprint(result);
+      if (!force && fp === lastFingerprint && (result.ok || result.idle)) {
+        return { skipped: true };
+      }
+      lastFingerprint = fp;
+
+      // Idle (chat list, no open conversation) — soft heartbeat, not a hard fail banner.
+      const extractOk = result.idle ? null : Boolean(result.ok);
+      const health = {
+        extVersion: EXT_VERSION,
+        waWebBuild: waWebBuild(),
+        strategyUsed: result.strategyUsed || '',
+        extractOk,
+        errorCode: result.errorCode || (result.idle ? 'NO_ACTIVE_CHAT' : ''),
+      };
+
+      try {
+        const resp = await chrome.runtime.sendMessage({
+          type: 'SYNC_CHAT',
+          payload: {
+            phone: result.phone || '',
+            chatName: result.chatName || '',
+            messages: result.ok ? (result.messages || []) : [],
+            health,
+          },
+        });
+        return resp;
+      } catch (err) {
+        return { ok: false, error: err?.message || 'bg_failed' };
+      }
+    } finally {
+      running = false;
     }
   }
 
@@ -75,11 +86,13 @@
       return true;
     }
     if (msg?.type === 'PROBE') {
-      getAdapterConfig().then((cfg) => {
-        const result = window.SMWA_extractActiveChat(cfg);
+      getAdapterConfig().then(async (cfg) => {
+        const result = await window.SMWA_extractActiveChat(cfg);
         sendResponse({
           ok: result.ok,
+          idle: Boolean(result.idle),
           phone: result.phone,
+          chatName: result.chatName,
           count: result.messages?.length || 0,
           strategyUsed: result.strategyUsed,
           errorCode: result.errorCode,
@@ -91,14 +104,18 @@
     return false;
   });
 
-  // Observe chat switches
+  // Debounced observer — WA mutates heavily; don't stampede extract.
+  let obsTimer = null;
   const observer = new MutationObserver(() => {
-    runExtractAndSync(false).catch(() => {});
+    if (obsTimer) clearTimeout(obsTimer);
+    obsTimer = setTimeout(() => {
+      runExtractAndSync(false).catch(() => {});
+    }, 800);
   });
   const startObs = () => {
     const main = document.querySelector('#main') || document.body;
     if (main) {
-      observer.observe(main, { childList: true, subtree: true, characterData: true });
+      observer.observe(main, { childList: true, subtree: true, characterData: false });
     }
   };
 

@@ -12,7 +12,10 @@ async function refresh() {
     banner.textContent = 'Update required — install the latest extension from CRM.';
   } else if (status.lastHealth?.extractOk === false) {
     banner.className = 'banner err';
-    banner.textContent = 'Chrome Sync offline — use phone (APK) WhatsApp sync until WA Web is fixed.';
+    banner.textContent = 'Open a lead chat on WhatsApp Web (or use phone APK sync).';
+  } else if (status.lastHealth?.errorCode === 'NO_ACTIVE_CHAT') {
+    banner.className = 'banner';
+    banner.textContent = 'Connected — open a lead chat to sync.';
   } else if (!status.configured) {
     banner.className = 'banner';
     banner.textContent = 'Set API URL + pass key in Options.';

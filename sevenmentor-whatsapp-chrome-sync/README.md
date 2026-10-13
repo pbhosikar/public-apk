@@ -25,10 +25,15 @@ Chrome **cannot** load a `.zip` file. Unzip first, then load the folder.
 
 ## Resilience
 
-- Multi-strategy extractors (`store_hook` → `aria_stable` → `dom_fallback`)
+- Multi-strategy extractors (`idb_lookup` → `aria_stable` → `dom_fallback` → `store_hook`)
+- IndexedDB (`model-storage`) phone resolution for **named contacts** (WA Web no longer exposes JID in the DOM)
+- `chatName` fallback matched server-side to the counsellor’s assigned leads only
+- Soft idle when no chat is open (`NO_ACTIVE_CHAT`) — does not flash “extract failed”
 - Remote adapter config: `GET /api/v1/public/whatsapp-ext/adapter-config`
 - Heartbeat + health telemetry (`extractOk`, `strategyUsed`, `errorCode`)
-- On extract failure, popup prompts **phone APK sync** as fallback
+- On hard extract failure, popup prompts **phone APK sync** as fallback
+
+**Current version:** `1.0.3`
 
 ## Package ZIP (maintainers)
 

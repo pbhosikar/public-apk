@@ -86,6 +86,7 @@ async function postSync(payload) {
     : [];
   const body = {
     phone: payload.phone || '',
+    chatName: payload.chatName || payload.name || '',
     messages,
     health: payload.health || null,
   };

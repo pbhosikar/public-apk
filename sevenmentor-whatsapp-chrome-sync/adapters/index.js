@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const ORDER = ['store_hook', 'aria_stable', 'dom_fallback'];
+  const ORDER = ['idb_lookup', 'aria_stable', 'dom_fallback', 'store_hook'];
 
   function remoteStrategyMap(adapterConfig) {
     const map = {};
@@ -20,43 +20,81 @@
       .map((s) => s.id)
       .filter(Boolean);
     const ids = remote.length ? remote : ORDER;
-    // Always try store_hook first if present in adapters, even if not in remote list.
-    const merged = ['store_hook', ...ids.filter((id) => id !== 'store_hook')];
-    return [...new Set(merged)];
+    // Prefer IDB (phone for named contacts) then DOM strategies.
+    const preferred = ['idb_lookup', 'store_hook', ...ids.filter((id) => id !== 'idb_lookup' && id !== 'store_hook')];
+    return [...new Set(preferred)];
+  }
+
+  function isSuccess(result) {
+    if (!result?.ok) return false;
+    const hasPhone = Boolean(result.phone);
+    const hasName = Boolean(result.chatName);
+    const hasMsgs = Array.isArray(result.messages);
+    // Need identity (phone or chat name) + messages array (may be empty for identity-only).
+    return (hasPhone || hasName) && hasMsgs;
   }
 
   /**
    * Multi-strategy extractor. First success wins.
-   * @returns {{ ok, phone, messages, strategyUsed, errorCode }}
+   * Async — IDB lookup needs awaits.
+   * @returns {Promise<{ ok, phone, messages, chatName, strategyUsed, errorCode, idle? }>}
    */
-  window.SMWA_extractActiveChat = function SMWA_extractActiveChat(adapterConfig) {
+  window.SMWA_extractActiveChat = async function SMWA_extractActiveChat(adapterConfig) {
     if (adapterConfig?.disabled) {
       return {
         ok: false,
         phone: '',
         messages: [],
+        chatName: '',
         strategyUsed: '',
         errorCode: 'ADAPTER_DISABLED',
+      };
+    }
+
+    const util = window.SMWA_PHONE;
+    if (util && !util.hasOpenChat()) {
+      return {
+        ok: false,
+        phone: '',
+        messages: [],
+        chatName: '',
+        strategyUsed: '',
+        errorCode: 'NO_ACTIVE_CHAT',
+        idle: true,
       };
     }
 
     const adapters = window.SMWA_ADAPTERS || {};
     const remote = remoteStrategyMap(adapterConfig);
     const errors = [];
+    let sawIdle = false;
 
     for (const id of orderedIds(adapterConfig)) {
       const adapter = adapters[id];
-      if (!adapter || typeof adapter.extract !== 'function') {
+      if (!adapter) {
         errors.push(`${id}:missing`);
         continue;
       }
       try {
-        const result = adapter.extract(remote[id] || {});
-        if (result?.ok && result.phone && Array.isArray(result.messages)) {
+        let result;
+        if (typeof adapter.extractAsync === 'function') {
+          result = await adapter.extractAsync(remote[id] || {});
+        } else if (typeof adapter.extract === 'function') {
+          result = adapter.extract(remote[id] || {});
+        } else {
+          errors.push(`${id}:missing`);
+          continue;
+        }
+        if (result?.idle || result?.errorCode === 'NO_ACTIVE_CHAT') {
+          sawIdle = true;
+          continue;
+        }
+        if (isSuccess(result)) {
           return {
             ok: true,
-            phone: result.phone,
-            messages: result.messages,
+            phone: result.phone || '',
+            messages: result.messages || [],
+            chatName: result.chatName || '',
             strategyUsed: result.strategyUsed || id,
             errorCode: '',
           };
@@ -67,10 +105,23 @@
       }
     }
 
+    if (sawIdle && !errors.length) {
+      return {
+        ok: false,
+        phone: '',
+        messages: [],
+        chatName: '',
+        strategyUsed: '',
+        errorCode: 'NO_ACTIVE_CHAT',
+        idle: true,
+      };
+    }
+
     return {
       ok: false,
       phone: '',
       messages: [],
+      chatName: '',
       strategyUsed: '',
       errorCode: errors.length ? `EXTRACT_FAIL:${errors.slice(0, 4).join('|')}` : 'EXTRACT_FAIL',
     };
